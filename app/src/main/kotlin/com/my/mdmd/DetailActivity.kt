@@ -68,7 +68,7 @@ class DetailActivity : AppCompatActivity() {
 
 			
 		    //use su return value
-			var go_to_mainActivily = !su_granted // update later
+			var go_to_mainActivily = su_granted // update later
 			if(go_to_mainActivily){
 				
 				// stay on maimactuvity only
