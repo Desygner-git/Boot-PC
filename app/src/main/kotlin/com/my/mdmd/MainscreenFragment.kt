@@ -131,7 +131,7 @@ Toast.makeText(activity,"Something went wrong", Toast.LENGTH_SHORT).show()
 		 startBtn.setOnClickListener { 
          
         	//test stuff	
-			 
+			 /***
              fun getMassStorage(list: List<String>): String {
     for ((index, value) in list.withIndex()) {
         if (value.contains("mass_storage")) {
@@ -140,16 +140,48 @@ Toast.makeText(activity,"Something went wrong", Toast.LENGTH_SHORT).show()
     }
     return "1"
 }
+// andeoid 12+ increasing works for Jo reason. 
+	     fun getLunDynamically(list: List<String>): String {
+    for ((index, value) in list.withIndex()) {
+        if (value.contains("lun")) {
+            return list[index]
+        }
+    }
+    return "1"
+	     }
+****/
+
+fun getLunAndMassStorage(list: List<String>): Pair<String, String>{
+	
+	var lun = "1"
+	var massStorage = "1"
+	
+	for (value in list) {
+	if (value.contains("lun")) {
+	lun = value
+	} else if (value.contains("mass_storage")) {
+	massStorage = value
+	}
+	if (lun != "1" && massStorage != "1") break // Stop early when both values are found
+	}
+	
+	return lun to massStorage
+	
+}
+	
+	
 //get mass stuff
 if(MainActivity.Profile.massStorage.isEmpty()){
 ShellInterface.runShell("su")  
 var tempList = ShellInterface.runShell("ls /config/usb_gadget/g1/functions/").lines()
 
 
-var stri: String = getMassStorage(tempList)
-      
+//var stri: String = getMassStorage(tempList)
+  val (stri, Lun)    = getLunAndMassStorage(tempList)
       
       MainActivity.Profile.massStorage = stri     
+
+//Val Lun = getLunDynamically(tempList)
 			   
                 
 }                
@@ -188,9 +220,9 @@ var stri: String = getMassStorage(tempList)
               "echo 0x1d6b > idVendor\n" +
               "echo 0x0104 > idProduct\n" +
               "ln -s /config/usb_gadget/g1/functions/${MainActivity.Profile.massStorage}  /config/usb_gadget/g1/configs/b.1/f1\n" +
-              "echo \"\" > /sys/class/android_usb/android0/f_mass_storage/lun0/file\n" +
-              "echo 1 > /sys/class/android_usb/android0/f_mass_storage/lun0/cdrom\n" +
-              "echo 1 > /sys/class/android_usb/android0/f_mass_storage/lun0/ro\n" +
+              "echo \"\" > /sys/class/android_usb/android0/f_mass_storage/${Lun}/file\n" +
+              "echo 1 > /sys/class/android_usb/android0/f_mass_storage/${Lun}/cdrom\n" +
+              "echo 1 > /sys/class/android_usb/android0/f_mass_storage/${Lun}/ro\n" +
               "echo -n \"$fileNameInQuote\" >configs/b.1/f1/lun.0/file\n" +
               "getprop sys.usb.controller >/config/usb_gadget/g1/UDC\n" +
               "setprop sys.usb.state cdrom" )
